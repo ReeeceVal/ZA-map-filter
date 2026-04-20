@@ -1,6 +1,6 @@
 # SA Region Filter Builder
 
-A Flask + Leaflet.js tool for visually selecting South African administrative regions and generating SQL `WHERE` clause filters for kiosk demand analysis.
+A Flask + Leaflet.js tool for visually selecting South African administrative regions and generating SQL `WHERE` clause filters for spatial region selection and analysis.
 
 ---
 
@@ -80,11 +80,11 @@ Drop any number of `.geojson` files into the `layers/` folder. They are auto-dis
 
 ```
 layers/
-  kiosk_sites.geojson
-  demand_nodes.geojson
+  points.geojson
+  other_points.geojson
 ```
 
-Each file appears as a toggle button in the **bottom-left panel** of the map, with a distinct colour. Clicking it loads and displays the points; a dropdown next to the button selects which property to show in the tooltip (defaults to `name`, `names`, `label`, or `gln` if present).
+Each file appears as a toggle button in the **bottom-left panel** of the map, with a distinct colour. Clicking it loads and displays the points; a dropdown next to the button selects which property to show in the tooltip (defaults to `name`, `names`, `label`, or `title` if present).
 
 ### GeoJSON format requirements
 
@@ -100,7 +100,7 @@ Minimal example:
     {
       "type": "Feature",
       "geometry": { "type": "Point", "coordinates": [28.04, -26.20] },
-      "properties": { "name": "Site A", "gln": "6001234567890" }
+      "properties": { "name": "Site A", "type": "example" }
     }
   ]
 }

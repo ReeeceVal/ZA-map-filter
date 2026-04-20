@@ -10,7 +10,7 @@ DATA_DIR   = Path("prepared_data")
 LAYERS_DIR = Path("layers")
 
 # Fields that, if present, should be used as the default tooltip label
-_LABEL_PRIORITY = {'name', 'names', 'label', 'title', 'nom', 'naam', 'gln'}
+_LABEL_PRIORITY = {'name', 'names', 'label', 'title', 'nom', 'naam'}
 
 _layer_meta: list[dict] = []
 
