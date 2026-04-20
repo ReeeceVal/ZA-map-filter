@@ -1,0 +1,461 @@
+/* ── Variables ─────────────────────────────────────────── */
+:root {
+  --bg:          #0d1117;
+  --bg-panel:    #161b22;
+  --bg-header:   #1c2128;
+  --border:      #30363d;
+  --text:        #e6edf3;
+  --text-muted:  #8b949e;
+  --accent:      #00e5ff;
+  --accent-bg:   rgba(0,229,255,0.12);
+  --danger:      #f85149;
+  --sql-w:       280px;
+  --sel-w:       300px;
+}
+
+/* ── Reset ─────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-size: 13px;
+  height: 100vh;
+  overflow: hidden;
+}
+
+button { cursor: pointer; font-family: inherit; font-size: inherit; }
+
+/* ── App shell ─────────────────────────────────────────── */
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* ── Search bar ────────────────────────────────────────── */
+#search-bar {
+  position: relative;
+  background: var(--bg-header);
+  border-bottom: 1px solid var(--border);
+  padding: 7px 12px;
+  z-index: 1000;
+  flex-shrink: 0;
+}
+
+#search-wrapper {
+  position: relative;
+}
+
+#search-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 15px;
+  height: 15px;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+#search-input {
+  width: 100%;
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 7px 12px 7px 32px;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+#search-input:focus { border-color: var(--accent); }
+#search-input::placeholder { color: var(--text-muted); }
+
+#search-results {
+  position: absolute;
+  top: calc(100% + 2px);
+  left: 12px;
+  right: 12px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+  z-index: 1001;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+}
+
+#search-results.hidden { display: none; }
+
+.search-result {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.1s;
+}
+.search-result:last-child { border-bottom: none; }
+.search-result:hover { background: var(--bg-header); }
+
+.search-level {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+  min-width: 70px;
+}
+
+.search-name { color: var(--text); }
+
+.search-no-results {
+  padding: 10px 12px;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* ── Panel row ─────────────────────────────────────────── */
+#panel-row {
+  display: grid;
+  grid-template-columns: var(--sql-w) 6px 1fr 6px var(--sel-w);
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* ── Resize handles ────────────────────────────────────── */
+.resize-handle {
+  background: var(--border);
+  cursor: col-resize;
+  position: relative;
+  z-index: 10;
+  transition: background 0.15s;
+}
+
+.resize-handle::after {
+  content: '';
+  position: absolute;
+  inset: 0 -7px;
+}
+
+.resize-handle:hover { background: rgba(0,229,255,0.4); }
+
+/* ── Side panels shared ────────────────────────────────── */
+#sql-panel,
+#sel-panel {
+  background: var(--bg-panel);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: var(--bg-header);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.panel-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-muted);
+}
+
+.panel-header button {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 11px;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+#copy-btn:hover  { color: var(--accent); border-color: var(--accent); }
+#clear-btn:hover { color: var(--danger); border-color: var(--danger); }
+
+/* ── SQL panel ─────────────────────────────────────────── */
+#sql-output {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+  font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+  font-size: 12px;
+  line-height: 1.6;
+  color: #7ecfdf;        /* keywords / column names — softer cyan */
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.sql-value   { color: #ffe740; }   /* quoted IDs — neon yellow */
+.sql-comment { color: #4d5766; }   /* -- comments — muted grey */
+
+/* ── Selection panel ───────────────────────────────────── */
+#sel-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 6px 4px;
+}
+
+.sel-empty {
+  padding: 16px 12px;
+  color: var(--text-muted);
+  font-style: italic;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.sel-group { margin-bottom: 10px; }
+
+.sel-group-header {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-muted);
+  padding: 4px 8px 3px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 2px;
+}
+
+.sel-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 6px;
+  border-radius: 4px;
+  transition: background 0.1s;
+}
+
+.sel-item:hover { background: var(--bg-header); }
+
+.sel-item-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text);
+}
+
+.item-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  padding: 2px 4px;
+  border-radius: 3px;
+  line-height: 1;
+  font-size: 13px;
+  flex-shrink: 0;
+  transition: color 0.1s;
+}
+
+.item-btn.locate:hover { color: var(--accent); }
+.item-btn.remove:hover { color: var(--danger); }
+
+/* ── Map container ─────────────────────────────────────── */
+#map-container {
+  position: relative;
+  overflow: hidden;
+}
+
+#map {
+  width: 100%;
+  height: 100%;
+}
+
+/* ── Level toggle buttons ──────────────────────────────── */
+#level-buttons {
+  position: absolute;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 4px;
+  background: rgba(13,17,23,0.88);
+  padding: 5px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  z-index: 500;
+  backdrop-filter: blur(4px);
+}
+
+.level-btn {
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 5px 14px;
+  font-size: 12px;
+  font-weight: 500;
+  transition: color 0.15s, background 0.15s, border-color 0.15s;
+  position: relative;
+}
+
+.level-btn:hover:not(.loading) {
+  color: var(--accent);
+  background: var(--accent-bg);
+  border-color: rgba(0,229,255,0.4);
+}
+
+.level-btn.active {
+  color: var(--accent);
+  background: var(--accent-bg);
+  border-color: var(--accent);
+}
+
+.level-btn.loading {
+  opacity: 0.5;
+  cursor: wait;
+}
+
+.level-btn.loading::after {
+  content: '…';
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* ── Leaflet overrides ─────────────────────────────────── */
+.leaflet-control-attribution {
+  background: rgba(13,17,23,0.7) !important;
+  color: var(--text-muted) !important;
+  font-size: 10px !important;
+}
+
+.leaflet-control-attribution a { color: var(--text-muted) !important; }
+
+.leaflet-control-zoom a {
+  background: var(--bg-panel) !important;
+  color: var(--text) !important;
+  border-color: var(--border) !important;
+}
+
+.leaflet-control-zoom a:hover {
+  background: var(--bg-header) !important;
+  color: var(--accent) !important;
+}
+
+/* ── Map tooltip ───────────────────────────────────────── */
+.map-tooltip {
+  background: rgba(13,17,23,0.92) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text) !important;
+  font-size: 12px !important;
+  padding: 4px 9px !important;
+  border-radius: 4px !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4) !important;
+}
+
+.map-tooltip::before { display: none !important; }
+
+/* ── Map labels (divIcon) ──────────────────────────────── */
+.map-label {
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.map-label span {
+  display: block;
+  white-space: nowrap;
+  font-weight: 600;
+  pointer-events: none;
+  text-shadow: 0 0 5px #000, 0 0 5px #000, 0 0 5px #000;
+  transform: translate(-50%, -50%);
+}
+
+.map-label-adm1 span { font-size: 13px; color: rgba(0,229,255,0.9); }
+.map-label-adm2 span { font-size: 11px; color: rgba(230,237,243,0.85); }
+.map-label-adm3 span { font-size: 10px; color: rgba(200,215,225,0.8); }
+.map-label-adm4 span { font-size: 9px;  color: rgba(180,200,215,0.7); }
+
+/* ── Scrollbars ────────────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #484f58; }
+
+/* ── Point layers panel ────────────────────────────────── */
+#point-layers-panel {
+  position: absolute;
+  bottom: 28px;
+  left: 12px;
+  flex-direction: column;
+  gap: 5px;
+  background: rgba(13,17,23,0.88);
+  padding: 6px 7px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  z-index: 500;
+  backdrop-filter: blur(4px);
+  min-width: 170px;
+}
+
+.layer-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.layer-toggle {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex: 1;
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 4px 10px 4px 8px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+  text-align: left;
+}
+
+.layer-toggle:hover  { color: var(--text); border-color: #546e7a; }
+.layer-toggle.active { color: var(--text); border-color: #546e7a; }
+
+.layer-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  transition: opacity 0.2s;
+}
+
+.layer-field-sel {
+  background: var(--bg);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 3px 4px;
+  font-size: 11px;
+  cursor: pointer;
+  max-width: 88px;
+  transition: border-color 0.15s;
+}
+
+.layer-field-sel:hover,
+.layer-field-sel:focus  { border-color: #546e7a; outline: none; color: var(--text); }
+
+/* ── Highlight flash animation ─────────────────────────── */
+@keyframes feature-flash {
+  0%   { opacity: 1; }
+  50%  { opacity: 0.3; }
+  100% { opacity: 1; }
+}

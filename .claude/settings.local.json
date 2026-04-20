@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(py -c \"import fiona; print\\(fiona.listlayers\\('d:/OneDrive - Stellenbosch University/A_Masters/Kiosk_Docs/02_Knowledge/MASTERS/Data infrastructure/ZA-map-filter/Data/SA_Ward_demarcations_2020.gpkg'\\)\\)\")",
+      "Bash(py -c \"import fiona; layers = fiona.listlayers\\('d:/OneDrive - Stellenbosch University/A_Masters/Kiosk_Docs/02_Knowledge/MASTERS/Data infrastructure/ZA-map-filter/.ZA-map-filter-repo/Data/SA_Ward_demarcations_2020.gpkg'\\); print\\('Layers:', layers\\)\")",
+      "Bash(py -c \"import geopandas as gpd; gdf = gpd.read_file\\('d:/OneDrive - Stellenbosch University/A_Masters/Kiosk_Docs/02_Knowledge/MASTERS/Data infrastructure/ZA-map-filter/.ZA-map-filter-repo/Data/SA_Ward_demarcations_2020.gpkg'\\); print\\('Columns:', gdf.columns.tolist\\(\\)\\); print\\('\\\\nDtypes:'\\); print\\(gdf.dtypes\\); print\\('\\\\nCRS:', gdf.crs\\); print\\('\\\\nFirst 3 rows:'\\); print\\(gdf.head\\(3\\)\\)\")",
+      "Bash(py --version)",
+      "Bash(py -c \"import geopandas; print\\(geopandas.__version__\\)\")",
+      "Bash(py -c \"import flask; print\\(flask.__version__\\)\")",
+      "Bash(py -c \"import shapely; print\\(shapely.__version__\\)\")",
+      "Bash(py -c \"import fiona; print\\(fiona.__version__\\)\")",
+      "Bash(py -c \"import geopandas as gpd; gdf = gpd.read_file\\('d:/OneDrive - Stellenbosch University/A_Masters/Kiosk_Docs/02_Knowledge/MASTERS/Data infrastructure/ZA-map-filter/.ZA-map-filter-repo/Data/SA_Ward_demarcations_2020.gpkg'\\); print\\(list\\(gdf.columns\\)\\); print\\(len\\(gdf\\)\\); print\\(gdf.crs\\)\")",
+      "Bash(py -c ' *)",
+      "Bash(venv/Scripts/python -c ' *)"
+    ]
+  }
+}

@@ -1,0 +1,5 @@
+flask>=3.0
+flask-compress>=1.14
+geopandas>=1.0
+shapely>=2.0
+fiona>=1.9

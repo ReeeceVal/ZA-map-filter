@@ -1,0 +1,12 @@
+venv/
+prepared_data/
+__pycache__/
+*.pyc
+*.pyo
+.env
+.DS_Store
+Thumbs.db
+*.egg-info/
+dist/
+build/
+Data/
