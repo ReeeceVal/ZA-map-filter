@@ -49,28 +49,63 @@ window.AppState = (() => {
     _notify();
   }
 
+  const _LEVELS = ['adm4', 'adm3', 'adm2', 'adm1'];
+  const _SQL_COL = { adm4: 'ADM4_PCODE', adm3: 'ADM3_ID', adm2: 'ADM2_ID', adm1: 'ADM1_ID' };
+  const _CMT     = { adm4: 'Wards', adm3: 'Municipalities', adm2: 'Districts', adm1: 'Provinces' };
+
+  function _activeEntries() {
+    return _LEVELS
+      .filter(lvl => selected[lvl].size)
+      .map(lvl => ({
+        lvl,
+        col:  _SQL_COL[lvl],
+        cmt:  _CMT[lvl],
+        vals: [...selected[lvl].keys()].map(k => `'${k}'`).join(', '),
+      }));
+  }
+
   function generateSQL() {
-    const parts = [];
-
-    if (selected.adm4.size) {
-      const vals = [...selected.adm4.keys()].map(k => `'${k}'`).join(', ');
-      parts.push(`    ADM4_PCODE IN (${vals}) -- Wards`);
-    }
-    if (selected.adm3.size) {
-      const vals = [...selected.adm3.keys()].map(k => `'${k}'`).join(', ');
-      parts.push(`    ADM3_ID IN (${vals}) -- Municipalities`);
-    }
-    if (selected.adm2.size) {
-      const vals = [...selected.adm2.keys()].map(k => `'${k}'`).join(', ');
-      parts.push(`    ADM2_ID IN (${vals}) -- Districts`);
-    }
-    if (selected.adm1.size) {
-      const vals = [...selected.adm1.keys()].map(k => `'${k}'`).join(', ');
-      parts.push(`    ADM1_ID IN (${vals}) -- Provinces`);
-    }
-
-    if (parts.length === 0) return '-- No features selected';
+    const entries = _activeEntries();
+    if (!entries.length) return '-- No features selected';
+    const parts = entries.map(e => `    ${e.col} IN (${e.vals}) -- ${e.cmt}`);
     return 'WHERE ' + parts.join('\n   OR ');
+  }
+
+  function _dfName() {
+    return (window.AppConfig && AppConfig.dfName) || 'df';
+  }
+
+  function generatePandas() {
+    const entries = _activeEntries();
+    if (!entries.length) return '# No features selected';
+    const n = _dfName();
+    const lines = entries.map((e, i) => {
+      const pipe = i < entries.length - 1 ? ' |' : '';
+      return `    ${n}['${e.col}'].isin([${e.vals}])${pipe}  # ${e.cmt}`;
+    });
+    return `${n} = ${n}[\n` + lines.join('\n') + '\n]';
+  }
+
+  function generatePySpark() {
+    const entries = _activeEntries();
+    if (!entries.length) return '# No features selected';
+    const n = _dfName();
+    const lines = entries.map((e, i) => {
+      const pipe = i < entries.length - 1 ? ' |' : '';
+      return `    col('${e.col}').isin([${e.vals}])${pipe}  # ${e.cmt}`;
+    });
+    return `from pyspark.sql.functions import col\n\n${n} = ${n}.filter(\n` + lines.join('\n') + '\n)';
+  }
+
+  function generateR() {
+    const entries = _activeEntries();
+    if (!entries.length) return '# No features selected';
+    const n = _dfName();
+    const lines = entries.map((e, i) => {
+      const pipe = i < entries.length - 1 ? ' |' : '';
+      return `    ${e.col} %in% c(${e.vals})${pipe}  # ${e.cmt}`;
+    });
+    return `${n} <- ${n} %>%\n  filter(\n` + lines.join('\n') + '\n  )';
   }
 
   function _notify() {
@@ -90,5 +125,8 @@ window.AppState = (() => {
     removeFeature,
     clearAll,
     generateSQL,
+    generatePandas,
+    generatePySpark,
+    generateR,
   };
 })();

@@ -4,9 +4,35 @@ window.Panels = (() => {
   const LEVEL_ORDER  = ['adm4', 'adm3', 'adm2', 'adm1'];
   const LEVEL_LABELS = { adm4: 'Wards', adm3: 'Municipalities', adm2: 'Districts', adm1: 'Provinces' };
 
+  const GENERATORS = {
+    sql:     () => AppState.generateSQL(),
+    pandas:  () => AppState.generatePandas(),
+    pyspark: () => AppState.generatePySpark(),
+    r:       () => AppState.generateR(),
+  };
+
+  let currentLang = 'sql';
+
   function init() {
-    document.getElementById('copy-btn').addEventListener('click', _copySQL);
+    document.getElementById('copy-btn').addEventListener('click', _copyOutput);
     document.getElementById('clear-btn').addEventListener('click', () => AppState.clearAll());
+
+    const dfInput = document.getElementById('df-name-input');
+    dfInput.value = (window.AppConfig && AppConfig.dfName) || 'df';
+    dfInput.addEventListener('input', () => {
+      if (window.AppConfig) AppConfig.dfName = dfInput.value || 'df';
+      _renderOutput();
+    });
+
+    document.querySelectorAll('.lang-tab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        currentLang = btn.dataset.lang;
+        document.querySelectorAll('.lang-tab').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        _updateDfWrap();
+        _renderOutput();
+      });
+    });
 
     // Event delegation for locate / remove buttons
     document.getElementById('sel-list').addEventListener('click', e => {
@@ -22,35 +48,78 @@ window.Panels = (() => {
       }
     });
 
+    _updateDfWrap();
     render();
   }
 
+  function _updateDfWrap() {
+    const wrap = document.getElementById('df-name-wrap');
+    wrap.classList.toggle('hidden', currentLang === 'sql');
+  }
+
   function render() {
-    _renderSQL();
+    _renderOutput();
     _renderSelection();
   }
 
-  function _renderSQL() {
-    document.getElementById('sql-output').innerHTML = _colorizeSQL(AppState.generateSQL());
+  function _renderOutput() {
+    const colorizers = {
+      sql:     _colorizeSQL,
+      pandas:  _colorizePython,
+      pyspark: _colorizePython,
+      r:       _colorizeR,
+    };
+    const text = GENERATORS[currentLang]();
+    document.getElementById('sql-output').innerHTML = colorizers[currentLang](text);
   }
 
   function _colorizeSQL(sql) {
-    // Handle empty state
     if (!sql.includes('\n') && sql.startsWith('--')) {
       return `<span class="sql-comment">${_hesc(sql)}</span>`;
     }
     return sql.split('\n').map(line => {
-      // Split at first '--' to separate code from comment
       const ci = line.indexOf('--');
       const code    = ci >= 0 ? line.slice(0, ci) : line;
       const comment = ci >= 0 ? line.slice(ci)    : '';
-      // Wrap quoted values in the code portion
       const coloredCode = _hesc(code).replace(/'([^']*)'/g,
         `<span class="sql-value">'$1'</span>`);
       const coloredComment = comment
         ? `<span class="sql-comment">${_hesc(comment)}</span>`
         : '';
       return coloredCode + coloredComment;
+    }).join('\n');
+  }
+
+  function _colorizePython(code) {
+    if (code.startsWith('#')) return `<span class="py-cmt">${_hesc(code)}</span>`;
+    return code.split('\n').map(line => {
+      const ci = line.indexOf('  #');
+      const codePart = ci >= 0 ? line.slice(0, ci) : line;
+      const cmtPart  = ci >= 0 ? line.slice(ci)    : '';
+      const colored = _hesc(codePart)
+        .replace(/'([^']*)'/g, `<span class="py-str">'$1'</span>`)
+        .replace(/\b(from|import|col|df|isin|filter)\b/g, `<span class="py-kw">$1</span>`);
+      const coloredCmt = cmtPart
+        ? `<span class="py-cmt">${_hesc(cmtPart)}</span>`
+        : '';
+      return colored + coloredCmt;
+    }).join('\n');
+  }
+
+  function _colorizeR(code) {
+    if (code.startsWith('#')) return `<span class="r-cmt">${_hesc(code)}</span>`;
+    return code.split('\n').map(line => {
+      const ci = line.indexOf('  #');
+      const codePart = ci >= 0 ? line.slice(0, ci) : line;
+      const cmtPart  = ci >= 0 ? line.slice(ci)    : '';
+      const colored = _hesc(codePart)
+        .replace(/'([^']*)'/g, `<span class="r-str">'$1'</span>`)
+        .replace(/(%in%|%&gt;%|&lt;-)/g, `<span class="r-op">$1</span>`)
+        .replace(/\b(df|filter|library|c)\b/g, `<span class="r-kw">$1</span>`);
+      const coloredCmt = cmtPart
+        ? `<span class="r-cmt">${_hesc(cmtPart)}</span>`
+        : '';
+      return colored + coloredCmt;
     }).join('\n');
   }
 
@@ -87,24 +156,25 @@ window.Panels = (() => {
       : '<div class="sel-empty">Click map features to add regions to query</div>';
   }
 
-  function _copySQL() {
-    const sql = AppState.generateSQL();
-    navigator.clipboard.writeText(sql).then(() => {
-      const btn = document.getElementById('copy-btn');
-      btn.textContent = 'Copied!';
-      setTimeout(() => { btn.textContent = 'Copy'; }, 1600);
+  function _copyOutput() {
+    const text = GENERATORS[currentLang]();
+    navigator.clipboard.writeText(text).then(() => {
+      _flashCopy();
     }).catch(() => {
-      // Fallback for non-HTTPS
       const ta = document.createElement('textarea');
-      ta.value = sql;
+      ta.value = text;
       document.body.appendChild(ta);
       ta.select();
       document.execCommand('copy');
       document.body.removeChild(ta);
-      const btn = document.getElementById('copy-btn');
-      btn.textContent = 'Copied!';
-      setTimeout(() => { btn.textContent = 'Copy'; }, 1600);
+      _flashCopy();
     });
+  }
+
+  function _flashCopy() {
+    const btn = document.getElementById('copy-btn');
+    btn.textContent = 'Copied!';
+    setTimeout(() => { btn.textContent = 'Copy'; }, 1600);
   }
 
   return { init, render };

@@ -26,11 +26,21 @@
     <!-- Three-panel row -->
     <div id="panel-row">
 
-      <!-- SQL panel (left) -->
+      <!-- Query filter panel (left) -->
       <div id="sql-panel">
         <div class="panel-header">
-          <span class="panel-title">SQL Filter</span>
+          <span class="panel-title">Query Filter</span>
           <button id="copy-btn">Copy</button>
+        </div>
+        <div id="lang-tabs">
+          <button class="lang-tab active" data-lang="sql">SQL</button>
+          <button class="lang-tab" data-lang="pandas">Pandas</button>
+          <button class="lang-tab" data-lang="pyspark">PySpark</button>
+          <button class="lang-tab" data-lang="r">R</button>
+          <label id="df-name-wrap" class="hidden">
+            <span id="df-name-label">var</span>
+            <input id="df-name-input" type="text" spellcheck="false" autocomplete="off" />
+          </label>
         </div>
         <pre id="sql-output">-- No features selected</pre>
       </div>
@@ -67,6 +77,7 @@
   </div><!-- /app -->
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="/static/js/config.js"></script>
   <script src="/static/js/state.js"></script>
   <script src="/static/js/panels.js"></script>
   <script src="/static/js/map.js"></script>

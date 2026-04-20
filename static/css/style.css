@@ -185,6 +185,68 @@ button { cursor: pointer; font-family: inherit; font-size: inherit; }
 #copy-btn:hover  { color: var(--accent); border-color: var(--accent); }
 #clear-btn:hover { color: var(--danger); border-color: var(--danger); }
 
+/* ── Language tabs ─────────────────────────────────────── */
+#lang-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 6px 10px;
+  background: var(--bg-header);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.lang-tab {
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 2px 9px;
+  font-size: 11px;
+  font-weight: 500;
+  transition: color 0.15s, background 0.15s, border-color 0.15s;
+}
+
+.lang-tab:hover {
+  color: var(--text);
+  border-color: #546e7a;
+}
+
+.lang-tab.active {
+  color: var(--accent);
+  background: var(--accent-bg);
+  border-color: var(--accent);
+}
+
+#df-name-wrap {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+}
+
+#df-name-wrap.hidden { display: none; }
+
+#df-name-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  user-select: none;
+}
+
+#df-name-input {
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 11px;
+  font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+  width: 80px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+#df-name-input:focus { border-color: var(--accent); }
+
 /* ── SQL panel ─────────────────────────────────────────── */
 #sql-output {
   flex: 1;
@@ -200,6 +262,17 @@ button { cursor: pointer; font-family: inherit; font-size: inherit; }
 
 .sql-value   { color: #ffe740; }   /* quoted IDs — neon yellow */
 .sql-comment { color: #4d5766; }   /* -- comments — muted grey */
+
+/* Python (Pandas / PySpark) */
+.py-kw  { color: #c792ea; }        /* keywords: from, import, col, df */
+.py-str { color: #ffe740; }        /* quoted values */
+.py-cmt { color: #4d5766; }        /* # comments */
+
+/* R / dplyr */
+.r-kw  { color: #c792ea; }        /* keywords: df, filter, c */
+.r-op  { color: #89ddff; }        /* operators: %in%, %->%, <- */
+.r-str { color: #ffe740; }        /* quoted values */
+.r-cmt { color: #4d5766; }        /* # comments */
 
 /* ── Selection panel ───────────────────────────────────── */
 #sel-list {
