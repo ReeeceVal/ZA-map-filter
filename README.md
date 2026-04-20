@@ -1,6 +1,6 @@
 # SA Region Filter Builder
 
-A Flask + Leaflet.js tool for visually selecting South African administrative regions and generating SQL `WHERE` clause filters for spatial region selection and analysis.
+A Flask + Leaflet.js tool for visually selecting South African administrative regions and generating filter code for spatial analysis — output in **SQL, Pandas, PySpark, or R**.
 
 ---
 
@@ -49,28 +49,71 @@ py app.py
 
 Open `http://localhost:5000`.
 
+
 ---
 
 ## Usage
 
 - Toggle between **Province / District / Municipality / Ward** levels using the buttons at the bottom of the map.
-- **Click** any region to add it to the SQL filter. Click again to deselect.
+- **Click** any region to add it to the filter. Click again to deselect.
 - Selected regions from other levels remain visible as dashed outlines when you switch levels.
 - Use the **search bar** (top) to jump to any region by name across all levels.
-- The **SQL panel** (left) shows the live `WHERE` clause — click **Copy** to copy it.
+- The **Filter Output panel** (left) shows the live filter code — click **Copy ↗** or press `Ctrl+Shift+X` to copy.
 - The **Selected panel** (right) lists chosen regions grouped by level; use ⊙ to locate and × to remove.
 - Drag the dividers between panels to resize them.
 
 ---
 
-## SQL output format
+## Filter output languages
 
+Switch between languages using the pill tabs at the top of the Filter Output panel.
+
+### SQL
 ```sql
 WHERE ADM4_PCODE IN ('ZA...', ...) -- Wards
-   OR ADM3_ID IN ('...', ...)      -- Municipalities
-   OR ADM2_ID IN ('...', ...)      -- Districts
-   OR ADM1_ID IN ('...', ...)      -- Provinces
+   OR ADM3_ID    IN ('...', ...)   -- Municipalities
+   OR ADM2_ID    IN ('...', ...)   -- Districts
+   OR ADM1_ID    IN ('...', ...)   -- Provinces
 ```
+
+### Pandas (Python)
+```python
+df = df[
+    df['ADM2_ID'].isin(['ZA...', ...]) |  # Districts
+    df['ADM1_ID'].isin(['ZA...'])          # Provinces
+]
+```
+
+### PySpark
+```python
+from pyspark.sql.functions import col
+
+df = df.filter(
+    col('ADM2_ID').isin(['ZA...', ...]) |  # Districts
+    col('ADM1_ID').isin(['ZA...'])          # Provinces
+)
+```
+
+### R / dplyr
+```r
+df <- df %>%
+  filter(
+    ADM2_ID %in% c('ZA...', ...) |  # Districts
+    ADM1_ID %in% c('ZA...')          # Provinces
+  )
+```
+
+### Configuring the default variable name
+
+For Pandas, PySpark, and R output the variable name defaults to `df`. To change the default, edit `static/js/config.js`:
+
+```js
+window.AppConfig = {
+  dfName: 'gdf',  // change to whatever your DataFrame is called
+};
+```
+
+The name can also be changed per-session using the `var` input that appears next to the language tabs when a non-SQL language is active.
 
 ---
 
