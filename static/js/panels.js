@@ -24,10 +24,10 @@ window.Panels = (() => {
       _renderOutput();
     });
 
-    document.querySelectorAll('.lang-tab').forEach(btn => {
+    document.querySelectorAll('.lang-pill').forEach(btn => {
       btn.addEventListener('click', () => {
         currentLang = btn.dataset.lang;
-        document.querySelectorAll('.lang-tab').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.lang-pill').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         _updateDfWrap();
         _renderOutput();
@@ -45,6 +45,13 @@ window.Panels = (() => {
       if (remove) {
         const item = remove.closest('.sel-item');
         AppState.removeFeature(item.dataset.level, item.dataset.id);
+      }
+    });
+
+    document.addEventListener('keydown', e => {
+      if (e.ctrlKey && e.shiftKey && e.key === 'X') {
+        e.preventDefault();
+        _copyOutput();
       }
     });
 
@@ -154,6 +161,10 @@ window.Panels = (() => {
     list.innerHTML = hasAny
       ? html
       : '<div class="sel-empty">Click map features to add regions to query</div>';
+
+    const total = Object.values(AppState.selected).reduce((s, m) => s + m.size, 0);
+    const countEl = document.getElementById('sel-count');
+    if (countEl) countEl.textContent = total > 0 ? total : '';
   }
 
   function _copyOutput() {
@@ -174,7 +185,11 @@ window.Panels = (() => {
   function _flashCopy() {
     const btn = document.getElementById('copy-btn');
     btn.textContent = 'Copied!';
-    setTimeout(() => { btn.textContent = 'Copy'; }, 1600);
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = 'Copy ↗';
+      btn.classList.remove('copied');
+    }, 1600);
   }
 
   return { init, render };

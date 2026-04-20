@@ -10,14 +10,15 @@
 <body>
   <div id="app">
 
-    <!-- Search bar -->
+    <!-- Top bar -->
     <div id="search-bar">
+      <div id="app-logo">ZA <span id="app-logo-mark">◈</span></div>
       <div id="search-wrapper">
         <svg id="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
           <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd"/>
         </svg>
         <input type="text" id="search-input"
-               placeholder="Search provinces, districts, municipalities, wards..."
+               placeholder="Search provinces, districts, municipalities, wards…"
                autocomplete="off" spellcheck="false" />
       </div>
       <div id="search-results" class="hidden"></div>
@@ -26,22 +27,23 @@
     <!-- Three-panel row -->
     <div id="panel-row">
 
-      <!-- Query filter panel (left) -->
+      <!-- Filter output panel (left) -->
       <div id="sql-panel">
         <div class="panel-header">
-          <span class="panel-title">Query Filter</span>
-          <button id="copy-btn">Copy</button>
+          <div class="panel-header-accent energy"></div>
+          <span class="panel-title">Filter Output</span>
+          <button id="copy-btn">Copy ↗</button>
         </div>
         <div id="lang-tabs">
-          <button class="lang-tab active" data-lang="sql">SQL</button>
-          <button class="lang-tab" data-lang="pandas">Pandas</button>
-          <button class="lang-tab" data-lang="pyspark">PySpark</button>
-          <button class="lang-tab" data-lang="r">R</button>
-          <label id="df-name-wrap" class="hidden">
-            <span id="df-name-label">var</span>
-            <input id="df-name-input" type="text" spellcheck="false" autocomplete="off" />
-          </label>
+          <button class="lang-pill active" data-lang="sql">SQL</button>
+          <button class="lang-pill" data-lang="pandas">Pandas</button>
+          <button class="lang-pill" data-lang="pyspark">PySpark</button>
+          <button class="lang-pill" data-lang="r">R</button>
         </div>
+        <label id="df-name-wrap" class="hidden">
+          <span id="df-name-label">var</span>
+          <input id="df-name-input" type="text" spellcheck="false" autocomplete="off" />
+        </label>
         <pre id="sql-output">-- No features selected</pre>
       </div>
 
@@ -65,7 +67,8 @@
       <!-- Selection panel (right) -->
       <div id="sel-panel">
         <div class="panel-header">
-          <span class="panel-title">Selected</span>
+          <div class="panel-header-accent potential"></div>
+          <span class="panel-title">Selected <span id="sel-count"></span></span>
           <button id="clear-btn">Clear All</button>
         </div>
         <div id="sel-list">
