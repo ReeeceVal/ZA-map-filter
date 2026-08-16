@@ -1,0 +1,36 @@
+{
+  "type": "FeatureCollection",
+  "name": "example_sites",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [28.0473, -26.2041] },
+      "properties": { "name": "Example Site 01", "category": "depot", "capacity": 120 }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [18.4241, -33.9249] },
+      "properties": { "name": "Example Site 02", "category": "retail", "capacity": 45 }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [31.0218, -29.8587] },
+      "properties": { "name": "Example Site 03", "category": "retail", "capacity": 60 }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [25.6022, -33.9608] },
+      "properties": { "name": "Example Site 04", "category": "depot", "capacity": 80 }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [26.2041, -29.0852] },
+      "properties": { "name": "Example Site 05", "category": "retail", "capacity": 30 }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [29.4486, -23.9045] },
+      "properties": { "name": "Example Site 06", "category": "mobile", "capacity": 15 }
+    }
+  ]
+}
