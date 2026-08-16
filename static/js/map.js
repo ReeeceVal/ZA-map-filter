@@ -21,12 +21,39 @@ window.MapManager = (() => {
     adm4: ['adm3', 'adm2', 'adm1'],
   };
 
-  // Outline style per overlay level — thicker = higher in hierarchy
+  // Outline weight per overlay level — thicker = higher in hierarchy.
+  // Colour comes from the palette at draw time (see C below).
   const OVERLAY_STYLE = {
-    adm3: { color: '#546e7a', weight: 1.5, opacity: 0.75, fillOpacity: 0 },
-    adm2: { color: '#90a4ae', weight: 2.5, opacity: 0.70, fillOpacity: 0 },
-    adm1: { color: '#cfd8dc', weight: 4.0, opacity: 0.60, fillOpacity: 0 },
+    adm3: { weight: 1.5, opacity: 0.75, fillOpacity: 0 },
+    adm2: { weight: 2.5, opacity: 0.70, fillOpacity: 0 },
+    adm1: { weight: 4.0, opacity: 0.60, fillOpacity: 0 },
   };
+
+  // Palette resolved from CSS custom properties, filled by _loadPalette() at init
+  const C = {};
+
+  // Custom properties come back from getComputedStyle unsubstituted, so the
+  // value is bounced through `color` on a probe element to force resolution
+  // into an rgb()/rgba() string the canvas renderer can consume.
+  function _cssColor(name) {
+    const probe = document.createElement('span');
+    probe.style.cssText = `display:none;color:var(${name})`;
+    document.body.appendChild(probe);
+    const value = getComputedStyle(probe).color;
+    probe.remove();
+    return value;
+  }
+
+  function _loadPalette() {
+    C.sel      = _cssColor('--map-sel');
+    C.selFill  = _cssColor('--map-sel-fill');
+    C.idle     = _cssColor('--map-idle');
+    C.idleFill = _cssColor('--map-idle-fill');
+    C.flash    = _cssColor('--map-flash');
+    C.adm1     = _cssColor('--map-adm1');
+    C.adm2     = _cssColor('--map-adm2');
+    C.adm3     = _cssColor('--map-adm3');
+  }
 
   let _map;
   const _layers        = {};     // level → L.GeoJSON (interactive)
@@ -43,9 +70,9 @@ window.MapManager = (() => {
     const id  = feature.properties[CFG[level].idCol];
     const sel = AppState.isSelected(level, id);
     return {
-      color:       sel ? '#00e5ff' : '#546e7a',
+      color:       sel ? C.sel     : C.idle,
       weight:      sel ? 2         : 0.5,
-      fillColor:   sel ? '#00e5ff' : '#37474f',
+      fillColor:   sel ? C.selFill : C.idleFill,
       fillOpacity: sel ? 0.38      : 0.15,
       opacity: 1,
     };
@@ -124,7 +151,7 @@ window.MapManager = (() => {
   // Lazily build a non-interactive outline-only layer for parent boundary display.
   function _buildOverlay(level) {
     if (_overlayLayers[level] || !_data[level]) return;
-    const s = OVERLAY_STYLE[level];
+    const s = { ...OVERLAY_STYLE[level], color: C[level] };
     _overlayLayers[level] = L.geoJSON(_data[level], {
       renderer: _canvas,
       interactive: false,
@@ -171,10 +198,10 @@ window.MapManager = (() => {
       renderer: _canvas,
       interactive: false,
       style: () => ({
-        color:       '#00e5ff',
+        color:       C.sel,
         weight:      2.5,
         opacity:     0.7,
-        fillColor:   '#00e5ff',
+        fillColor:   C.selFill,
         fillOpacity: 0.07,
         dashArray:   '6 4',
       }),
@@ -273,7 +300,7 @@ window.MapManager = (() => {
   function highlightFeature(level, id) {
     const lyr = (_byId[level] || {})[id];
     if (!lyr) return;
-    lyr.setStyle({ color: '#fff176', weight: 3, fillColor: '#fff176', fillOpacity: 0.45 });
+    lyr.setStyle({ color: C.flash, weight: 3, fillColor: C.flash, fillOpacity: 0.45 });
     setTimeout(() => lyr.setStyle(_style(level, lyr.feature)), 2000);
   }
 
@@ -283,6 +310,7 @@ window.MapManager = (() => {
   }
 
   function init() {
+    _loadPalette();
     _canvas = L.canvas({ padding: 0.5 });
 
     _map = L.map('map', {
@@ -319,5 +347,5 @@ window.MapManager = (() => {
 
   function getMap() { return _map; }
 
-  return { init, refreshActiveLayer, flyTo, flyToLatLng, highlightFeature, switchLevel, getMap };
+  return { init, refreshActiveLayer, flyTo, flyToLatLng, highlightFeature, switchLevel, getMap, cssColor: _cssColor };
 })();

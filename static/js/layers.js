@@ -1,8 +1,10 @@
 'use strict';
 
 window.LayerManager = (() => {
-  // Distinct palette — clear of the cyan accent (#00e5ff) used by selections
-  const COLORS = ['#ff6b6b', '#ffd93d', '#6bcb77', '#a78bfa'];
+  // Categorical palette from --pt-* — kept hue-separated and clear of the
+  // selection accent. Resolved at init because custom properties are only
+  // substituted at use time.
+  const COLORS = [];
 
   // Each entry: { meta, geojson, active, color, currentField }
   const _entries = {};
@@ -14,6 +16,7 @@ window.LayerManager = (() => {
   async function init(map) {
     _map    = map;
     _canvas = L.canvas({ padding: 0.5 });
+    COLORS.push(...['--pt-1', '--pt-2', '--pt-3', '--pt-4'].map(MapManager.cssColor));
 
     const resp  = await fetch('/api/layers');
     const metas = await resp.json();
