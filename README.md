@@ -126,7 +126,7 @@ The name can also be changed per-session using the `var` input that appears next
 
 ## Adding point reference layers
 
-Drop any number of `.geojson` files into the `layers/` folder. They are auto-discovered on app startup — no code changes needed.
+Drop any number of `.geojson` files into the `layers/` folder. This enables a reference for selecting regions aligned with any set of points. They are auto-discovered on app startup — no code changes needed.
 
 ```
 layers/
