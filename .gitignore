@@ -10,6 +10,10 @@ Thumbs.db
 dist/
 build/
 Data/
-layers/
+# Your own point layers stay local; the folder, its guide and the worked
+# example are tracked so the feature is discoverable out of the box.
+layers/*
+!layers/README.md
+!layers/example_sites.geojson
 .claude/
 CLAUDE.md
