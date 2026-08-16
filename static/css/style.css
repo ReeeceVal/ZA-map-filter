@@ -632,3 +632,161 @@ button { cursor: pointer; font-family: inherit; font-size: inherit; }
   50%  { opacity: 0.25; }
   100% { opacity: 1; }
 }
+
+/* ── Setup page ─────────────────────────────────────────── */
+/* The app shell is a locked 100vh viewport; setup scrolls instead. */
+body.setup-body { height: auto; min-height: 100vh; overflow: auto; }
+
+.setup-hidden { display: none; }
+
+#setup {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 56px 24px 40px;
+}
+
+#setup-logo {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--txt-dim);
+  margin-bottom: 22px;
+}
+#setup-logo #app-logo-mark { color: var(--energy); }
+
+#setup-title {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin-bottom: 10px;
+}
+
+#setup-intro {
+  color: var(--txt-dim);
+  line-height: 1.6;
+  margin-bottom: 30px;
+}
+
+.setup-step {
+  background: var(--bg2);
+  border: 1px solid var(--bdr);
+  border-radius: 8px;
+  padding: 16px 18px;
+  margin-bottom: 14px;
+}
+.setup-step p { color: var(--txt-dim); line-height: 1.6; }
+.setup-step strong { color: var(--txt); font-weight: 600; }
+
+.setup-step-title {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--txt-dim);
+  margin-bottom: 10px;
+}
+
+#setup a { color: var(--energy); text-decoration: none; }
+#setup a:hover { text-decoration: underline; }
+
+#setup code {
+  font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+  font-size: 12px;
+  background: var(--bg1);
+  border: 1px solid var(--bdr);
+  border-radius: 3px;
+  padding: 1px 5px;
+}
+
+.setup-found {
+  font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+  font-size: 12px;
+  color: var(--energy) !important;
+  margin-bottom: 14px;
+}
+
+/* Drop zone */
+#dropzone {
+  border: 1px dashed var(--bdr-med);
+  border-radius: 6px;
+  padding: 32px 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+#dropzone:hover,
+#dropzone.dragging {
+  border-color: var(--energy-bdr);
+  background: var(--energy-bg);
+}
+#dropzone.dragging #dropzone-text { color: var(--energy); }
+
+#dropzone-text { color: var(--txt); margin-bottom: 5px; }
+#dropzone-sub  { color: var(--txt-muted); font-size: 12px; }
+
+/* Buttons */
+.setup-btn {
+  display: inline-block;
+  background: transparent;
+  color: var(--txt);
+  border: 1px solid var(--bdr-med);
+  border-radius: 5px;
+  padding: 8px 16px;
+  text-decoration: none !important;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+.setup-btn:hover:not(:disabled) {
+  color: var(--energy);
+  border-color: var(--energy-bdr);
+  background: var(--energy-bg);
+}
+.setup-btn:disabled { opacity: 0.4; cursor: default; }
+.setup-btn-go { color: var(--energy); border-color: var(--energy-bdr); }
+
+/* Progress */
+#setup-status { margin-top: 20px; }
+
+#progress-track {
+  height: 3px;
+  background: var(--bg3);
+  border-radius: 3px;
+  overflow: hidden;
+}
+#progress-fill {
+  height: 100%;
+  width: 0;
+  background: var(--energy);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+#status-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--txt-dim);
+}
+#status-pct { color: var(--energy); flex-shrink: 0; }
+
+/* Result states */
+#setup-error {
+  margin-top: 20px;
+  padding: 12px 14px;
+  background: var(--potential-bg);
+  border: 1px solid var(--potential-bdr);
+  border-radius: 6px;
+  color: var(--potential);
+  line-height: 1.55;
+}
+
+#setup-done { margin-top: 20px; }
+#done-text { color: var(--txt-dim); margin-bottom: 12px; }
+
+#setup-footnote {
+  margin-top: 30px;
+  font-size: 12px;
+  color: var(--txt-muted);
+  line-height: 1.7;
+}

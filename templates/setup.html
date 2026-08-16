@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Setup — SA Region Filter Builder</title>
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body class="setup-body">
+  <div id="setup">
+    <div id="setup-logo">ZA <span id="app-logo-mark">◈</span></div>
+    <h1 id="setup-title">One-time setup</h1>
+    <p id="setup-intro">
+      The app needs a ward-level GeoPackage to build its region layers.
+      It is too large to ship with the code, so grab it once and drop it below.
+    </p>
+
+    {% if gpkg_name %}
+    <!-- File already sitting in Data/ -->
+    <div class="setup-step">
+      <div class="setup-step-title">Source file found</div>
+      <p class="setup-found">Data/{{ gpkg_name }}</p>
+      <button id="prepare-btn" class="setup-btn">Prepare layers</button>
+    </div>
+    {% else %}
+    <div class="setup-step">
+      <div class="setup-step-title">Step 1 — Download</div>
+      <p>
+        Get <strong>SA 2020 Ward Demarcations</strong> from the
+        <a href="https://dataportal-mdb-sa.opendata.arcgis.com/datasets/279fbf82a48f46678ddd498627af3f0a_0/explore?location=-28.479600%2C24.698437%2C6"
+           target="_blank" rel="noopener">MDB SA Open Data Portal</a>,
+        choosing the <strong>GeoPackage (.gpkg)</strong> format.
+      </p>
+    </div>
+
+    <div class="setup-step">
+      <div class="setup-step-title">Step 2 — Drop it here</div>
+      <div id="dropzone">
+        <div id="dropzone-text">Drag the <strong>.gpkg</strong> file here</div>
+        <div id="dropzone-sub">or click to browse</div>
+      </div>
+      <input type="file" id="file-input" accept=".gpkg" hidden />
+    </div>
+    {% endif %}
+
+    <!-- Progress / result -->
+    <div id="setup-status" class="setup-hidden">
+      <div id="progress-track"><div id="progress-fill"></div></div>
+      <div id="status-row">
+        <span id="status-message"></span>
+        <span id="status-pct"></span>
+      </div>
+    </div>
+
+    <div id="setup-error" class="setup-hidden"></div>
+
+    <div id="setup-done" class="setup-hidden">
+      <p id="done-text">Layers prepared.</p>
+      <a href="/" class="setup-btn setup-btn-go">Open the app →</a>
+    </div>
+
+    <p id="setup-footnote">
+      Prefer the terminal? Put the file in <code>Data/</code> and run
+      <code>py prepare_data.py</code>.
+    </p>
+  </div>
+
+  <script src="/static/js/setup.js"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', () => SetupPage.init());
+  </script>
+</body>
+</html>
