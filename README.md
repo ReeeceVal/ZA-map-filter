@@ -137,31 +137,9 @@ layers/
 
 Each file appears as a toggle button in the **bottom-left panel** of the map, with a distinct colour. Clicking it loads and displays the points; a dropdown next to the button selects which property to show in the tooltip (defaults to `name`, `names`, `label`, or `title` if present).
 
-### GeoJSON format requirements
 
-- File type: **`.geojson` only** — `.json`, `.shp`, `.gpkg` and `.csv` are ignored
-- CRS: **EPSG:4326** (WGS 84) — standard for GeoJSON
-- Coordinate order: `[longitude, latitude]` — e.g. `[28.04, -26.20]` for Johannesburg
-- Geometry type: `Point` (one feature per point)
-- Any properties are fine; include at least a human-readable name field
+[`layers/README.md`](layers/READMEcontainssdetails on adding these   for **QGIS**, **geopandas** and **ArcGIS Pro**.
 
-Copy `layers/example_sites.geojson` as a starting point, or write one by hand:
-```json
-{
-  "type": "FeatureCollection",
-  "features": [
-    {
-      "type": "Feature",
-      "geometry": { "type": "Point", "coordinates": [28.04, -26.20] },
-      "properties": { "name": "Site A", "type": "example" }
-    }
-  ]
-}
-```
-
-[`layers/README.md`](layers/README.md) repeats these notes next to the files themselves, along with export recipes for **QGIS**, **geopandas** and **ArcGIS Pro**.
-
-> Everything in `layers/` is git-ignored except the README and the example, so your own layers stay local. Force-add with `git add -f layers/my_sites.geojson` to track one.
 
 ---
 
