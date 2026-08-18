@@ -1,6 +1,6 @@
 # SA Region Filter Builder
 
-A Flask + Leaflet.js tool for visually selecting South African administrative regions and generating filter code for spatial analysis — output in **SQL, Pandas, PySpark, or R**.
+A Flask + Leaflet.js tool for visually selecting South African administrative regions and generating filter code for spatial analysis — output in **SQL, Pandas, PySpark, R, or a Python dictionary**.
 
 ---
 
@@ -71,9 +71,9 @@ You only need to do this once (or again if the source `.gpkg` changes).
 
 ---
 
-## Filter output languages
+## Filter output formats
 
-Switch between languages using the pill tabs at the top of the Filter Output panel.
+Switch between formats using the pill tabs at the top of the Filter Output panel.
 
 ### SQL
 ```sql
@@ -110,6 +110,25 @@ df <- df %>%
   )
 ```
 
+### Python dictionary
+
+Emits a fixed-shape `admin_dict` for use as a lookup or filter spec. Every key is
+always present; the ID columns carry the selection (`ADM4_PCODE` for wards,
+`ADM3_ID` / `ADM2_ID` / `ADM1_ID` for the levels above), and the name columns are
+left empty for the consumer to fill.
+
+```python
+admin_dict = {
+    "ADM4_PCODE": [],
+    "ADM3_EN": [],
+    "ADM3_ID": ["ZAdc13201", ...],
+    "ADM2_EN": [],
+    "ADM2_ID": ["ZAdc132", ...],
+    "ADM1_EN": [],
+    "ADM1_ID": ["ZA-WC"]
+}
+```
+
 ### Configuring the default variable name
 
 For Pandas, PySpark, and R output the variable name defaults to `df`. To change the default, edit `static/js/config.js`:
@@ -120,7 +139,7 @@ window.AppConfig = {
 };
 ```
 
-The name can also be changed per-session using the `var` input that appears next to the language tabs when a non-SQL language is active.
+The name can also be changed per-session using the `var` input that appears next to the format tabs when Pandas, PySpark, or R is active.
 
 ---
 

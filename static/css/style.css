@@ -298,9 +298,10 @@ button { cursor: pointer; font-family: inherit; font-size: inherit; }
   background: var(--potential-bg);
 }
 
-/* ── Language pill tabs ─────────────────────────────────── */
-#lang-tabs {
+/* ── Format pill tabs ───────────────────────────────────── */
+#format-tabs {
   display: flex;
+  flex-wrap: wrap;
   gap: 5px;
   padding: 7px 12px 6px;
   background: var(--bg1);
@@ -308,7 +309,7 @@ button { cursor: pointer; font-family: inherit; font-size: inherit; }
   flex-shrink: 0;
 }
 
-.lang-pill {
+.format-pill {
   background: transparent;
   border: 1px solid var(--bdr-med);
   border-radius: 20px;
@@ -321,12 +322,12 @@ button { cursor: pointer; font-family: inherit; font-size: inherit; }
   cursor: pointer;
   transition: color 0.15s, border-color 0.15s, background 0.15s;
 }
-.lang-pill:hover:not(.active) {
+.format-pill:hover:not(.active) {
   color: var(--txt);
   border-color: var(--bdr-med);
   background: var(--surf-hover);
 }
-.lang-pill.active {
+.format-pill.active {
   color: var(--energy);
   border-color: var(--energy-bdr);
   background: var(--energy-bg);
