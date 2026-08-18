@@ -6,12 +6,12 @@ A Flask + Leaflet.js tool for visually selecting South African administrative re
 
 ## Quick start
 
-```powershell
-py -m venv venv
-.\venv\Scripts\Activate.ps1
-pip install -r requirements.txt
+Dependencies are managed with [uv](https://docs.astral.sh/uv/). It creates the
+virtual environment, installs the locked versions, and runs the app:
 
-py app.py
+```powershell
+uv sync
+uv run app.py
 ```
 
 Open `http://localhost:5000`.
@@ -41,7 +41,7 @@ which columns were missing and which layers it found.
 If you'd rather not use the setup page, drop the `.gpkg` into `Data/` yourself and run:
 
 ```powershell
-py prepare_data.py
+uv run prepare_data.py
 ```
 
 Either route writes the same four simplified GeoJSON files to `prepared_data/`
