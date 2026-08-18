@@ -9,9 +9,13 @@ window.Panels = (() => {
     pandas:  () => AppState.generatePandas(),
     pyspark: () => AppState.generatePySpark(),
     r:       () => AppState.generateR(),
+    dict:    () => AppState.generateDict(),
   };
 
-  let currentLang = 'sql';
+  // Formats that take a user-supplied variable name
+  const DF_FORMATS = new Set(['pandas', 'pyspark', 'r']);
+
+  let currentFormat = 'sql';
 
   function init() {
     document.getElementById('copy-btn').addEventListener('click', _copyOutput);
@@ -24,10 +28,10 @@ window.Panels = (() => {
       _renderOutput();
     });
 
-    document.querySelectorAll('.lang-pill').forEach(btn => {
+    document.querySelectorAll('.format-pill').forEach(btn => {
       btn.addEventListener('click', () => {
-        currentLang = btn.dataset.lang;
-        document.querySelectorAll('.lang-pill').forEach(b => b.classList.remove('active'));
+        currentFormat = btn.dataset.format;
+        document.querySelectorAll('.format-pill').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         _updateDfWrap();
         _renderOutput();
@@ -61,7 +65,7 @@ window.Panels = (() => {
 
   function _updateDfWrap() {
     const wrap = document.getElementById('df-name-wrap');
-    wrap.classList.toggle('hidden', currentLang === 'sql');
+    wrap.classList.toggle('hidden', !DF_FORMATS.has(currentFormat));
   }
 
   function render() {
@@ -75,9 +79,10 @@ window.Panels = (() => {
       pandas:  _colorizePython,
       pyspark: _colorizePython,
       r:       _colorizeR,
+      dict:    _colorizeDict,
     };
-    const text = GENERATORS[currentLang]();
-    document.getElementById('sql-output').innerHTML = colorizers[currentLang](text);
+    const text = GENERATORS[currentFormat]();
+    document.getElementById('sql-output').innerHTML = colorizers[currentFormat](text);
   }
 
   function _colorizeSQL(sql) {
@@ -110,6 +115,17 @@ window.Panels = (() => {
         ? `<span class="py-cmt">${_hesc(cmtPart)}</span>`
         : '';
       return colored + coloredCmt;
+    }).join('\n');
+  }
+
+  function _colorizeDict(code) {
+    if (code.startsWith('#')) return `<span class="py-cmt">${_hesc(code)}</span>`;
+    return _hesc(code).split('\n').map(line => {
+      const ci = line.indexOf(':');
+      if (ci < 0) return line;
+      const key  = line.slice(0, ci).replace(/"[^"]*"/, m => `<span class="py-kw">${m}</span>`);
+      const vals = line.slice(ci).replace(/"[^"]*"/g, m => `<span class="py-str">${m}</span>`);
+      return key + vals;
     }).join('\n');
   }
 
@@ -168,7 +184,7 @@ window.Panels = (() => {
   }
 
   function _copyOutput() {
-    const text = GENERATORS[currentLang]();
+    const text = GENERATORS[currentFormat]();
     navigator.clipboard.writeText(text).then(() => {
       _flashCopy();
     }).catch(() => {

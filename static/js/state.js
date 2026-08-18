@@ -108,6 +108,29 @@ window.AppState = (() => {
     return `${n} <- ${n} %>%\n  filter(\n` + lines.join('\n') + '\n  )';
   }
 
+  // Fixed key order and shape of the emitted admin_dict; ID columns carry the
+  // selections, name columns are emitted empty for the consumer to fill.
+  const _DICT_KEYS = [
+    { key: 'ADM4_PCODE', lvl: 'adm4' },
+    { key: 'ADM3_EN'                 },
+    { key: 'ADM3_ID',    lvl: 'adm3' },
+    { key: 'ADM2_EN'                 },
+    { key: 'ADM2_ID',    lvl: 'adm2' },
+    { key: 'ADM1_EN'                 },
+    { key: 'ADM1_ID',    lvl: 'adm1' },
+  ];
+
+  function generateDict() {
+    if (!_activeEntries().length) return '# No features selected';
+    const lines = _DICT_KEYS.map(({ key, lvl }) => {
+      const vals = lvl
+        ? [...selected[lvl].keys()].map(k => `"${k}"`).join(', ')
+        : '';
+      return `    "${key}": [${vals}]`;
+    });
+    return 'admin_dict = {\n' + lines.join(',\n') + '\n}';
+  }
+
   function _notify() {
     if (window.Panels)     Panels.render();
     if (window.MapManager) MapManager.refreshActiveLayer();
@@ -128,5 +151,6 @@ window.AppState = (() => {
     generatePandas,
     generatePySpark,
     generateR,
+    generateDict,
   };
 })();
