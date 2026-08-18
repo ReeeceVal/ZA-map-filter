@@ -92,11 +92,10 @@ def validate_gpkg(path: Path) -> tuple[str | None, str | None]:
 
     Returns (layer_name, None) on success, or (None, error_message).
     """
-    import fiona
     import geopandas as gpd
 
     try:
-        layers = fiona.listlayers(str(path))
+        layers = gpd.list_layers(str(path))["name"].tolist()
     except Exception as e:
         return None, f"Could not read as a GeoPackage: {e}"
 

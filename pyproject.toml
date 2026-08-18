@@ -1,0 +1,16 @@
+[project]
+name = "za-map-filter"
+version = "0.1.0"
+description = "Flask + Leaflet tool for selecting South African administrative regions and generating filter code."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "flask>=3.0",
+    "flask-compress>=1.14",
+    "geopandas>=1.0",
+    "shapely>=2.0",
+]
+
+[tool.uv]
+# Application, not a distributable package — nothing to build or install.
+package = false
