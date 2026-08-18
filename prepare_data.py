@@ -3,7 +3,7 @@ Dissolves a ward-level GeoPackage into 4 ADM levels, simplifies geometries,
 and writes prepared GeoJSON files.
 
 Run standalone:
-    py prepare_data.py
+    uv run prepare_data.py
 
 Or use the in-app setup page (http://localhost:5000/setup), which calls the
 same functions.
@@ -191,4 +191,4 @@ if __name__ == "__main__":
     print(f"  Using layer '{layer}'")
 
     prepare(gpkg, layer, progress=lambda pct, msg: print(f"  [{pct:3d}%] {msg}"))
-    print("\nAll done. Run: py app.py")
+    print("\nAll done. Run: uv run app.py")
