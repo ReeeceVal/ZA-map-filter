@@ -1,8 +1,10 @@
 'use strict';
 
 window.MapManager = (() => {
-  const TILE_URL  = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
-  const TILE_ATTR = '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/attributions">CARTO</a>';
+  // Stadia serves these keyless on localhost; other hosts need a free API key
+  // appended as ?api_key=... (see https://docs.stadiamaps.com/authentication/).
+  const TILE_URL  = 'https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png';
+  const TILE_ATTR = '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="https://www.stadiamaps.com/">Stadia Maps</a>';
 
   // Config per ADM level
   const CFG = {
@@ -321,8 +323,7 @@ window.MapManager = (() => {
 
     L.tileLayer(TILE_URL, {
       attribution: TILE_ATTR,
-      maxZoom: 19,
-      subdomains: 'abcd',
+      maxZoom: 20,
     }).addTo(_map);
 
     _map.on('zoomend', _updateLabels);
